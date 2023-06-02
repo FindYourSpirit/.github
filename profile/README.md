@@ -1,4 +1,4 @@
-# Welcome to Find Your Spirit GitHub Profile!
+# Welcome to Find Your Spirit's GitHub Profile!
 At our organization, we foster open communities that collaborate on incredible projects for the hotel industry and its guests. We believe in the power of teamwork and are always excited to welcome new contributors.
 
 If you're looking to dive into open source development, we have plenty of "good first issue" opportunities available. It's a fantastic way to get involved and make a meaningful impact.
