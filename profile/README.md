@@ -17,3 +17,17 @@ At our organization, we are committed to providing you with exceptional tools an
 Please note that accessing our services may require acquiring a free trial or purchasing an access plan. These options enable you to unlock the full potential of our APIs and enjoy the benefits of our comprehensive offerings. We have designed these plans to cater to both individuals and businesses, ensuring that everyone can leverage our tools effectively.
 
 By obtaining a free trial or subscribing to an access plan, you gain unrestricted access to our services, allowing you to integrate them seamlessly into your projects. This enables you to enhance customer engagement, streamline operations, and drive growth within the hotel industry.
+
+## Documentation
+
+To help you get started and make the most out of our services, we provide comprehensive documentation. The documentation covers various aspects, including installation guides, API reference, usage examples, and best practices.
+
+Please refer to our [FYS Docs repository](https://github.com/FindYourSpirit/fys-docs) for detailed documentation and resources. This repository serves as a central hub for all the information you need to integrate our services seamlessly into your projects.
+
+In the FYS Docs repository, you will find step-by-step guides, tutorials, and code samples that demonstrate how to leverage our SDKs for .NET, npm, Maven, and PyPI. Whether you are a beginner or an experienced developer, the documentation will help you navigate through our offerings effectively.
+
+We regularly update and improve our documentation based on user feedback and the evolving needs of the community. If you have any suggestions or come across any issues while using our services, please feel free to contribute or raise an issue in the FYS Docs repository.
+
+We believe that well-documented resources are essential for a smooth development experience. Explore the documentation, empower yourself with the knowledge, and unlock the full potential of our services.
+
+If you have any questions or require further assistance, don't hesitate to reach out to us. We're here to support you on your journey of integrating our services and building exceptional solutions for the hotel industry and its guests.
