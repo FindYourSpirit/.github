@@ -26,8 +26,6 @@ Our offerings include SDKs for multiple platforms and ecosystems, allowing devel
 <!-- START_SDK_RELEASES -->
 <!-- END_SDK_RELEASES -->
 
-
-
 ## Accessing Our Services: Free Trial and Access Plans
 At our organization, we are committed to providing you with exceptional tools and services for the hotel industry. In order to fully utilize our APIs and take advantage of our extensive feature set, we offer flexible options to accommodate your needs.
 
