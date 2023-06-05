@@ -64,25 +64,26 @@ jobs:
               }
             };
 
-          const generateTable = (releases) => {
-            const tableHeaders = ["SDK", "Platform / Ecosystem", "GitHub Repository", "Package Hosting", "Release"];
+            const generateTable = (releases) => {
+              const tableHeaders = ["SDK", "Platform / Ecosystem", "GitHub Repository", "Package Hosting", "Release"];
 
-            const tableRows = releases
-              .filter((release) => !excludedRepos.includes(release.repo))
-              .map((release) => [
-                release.repo,
-                release.platform || "", // Provide a default value for platform if it is not available
-                `[${release.repo}](https://github.com/${owner}/${release.repo})`,
-                release.packageHosting || "", // Provide a default value for packageHosting if it is not available
-                `[${release.tag}](${release.releaseUrl})`,
-              ]);
+              const tableRows = releases
+                .filter((release) => !excludedRepos.includes(release.repo))
+                .map((release) => [
+                  release.repo,
+                  release.platform || "", // Provide a default value for platform if it is not available
+                  `[${release.repo}](https://github.com/FindYourSpirit/${release.repo})`,
+                  release.packageHosting || "", // Provide a default value for packageHosting if it is not available
+                  `[${release.tag}](${release.releaseUrl})`,
+                ]);
 
-            const tableData = [tableHeaders, ...tableRows];
+              const tableContent = [tableHeaders, ...tableRows]
+                .map((row) => `| ${row.join(" | ")} |`)
+                .join("\n");
 
-            const tableContent = tableData.map((row) => `| ${row.join(" | ")} |`).join("\n");
+              return `<!-- START_SDK_RELEASES -->\n${tableContent}\n<!-- END_SDK_RELEASES -->`;
+            };
 
-            return `<!-- START_SDK_RELEASES -->\n${tableContent}\n<!-- END_SDK_RELEASES -->`;
-          };
 
 
 
