@@ -12,7 +12,6 @@ Our offerings include SDKs for multiple platforms and ecosystems, allowing devel
 | fys-sdk-php    | PHP                  | [fys-sdk-php](https://github.com/FindYourSpirit/fys-sdk-php)       | [Packagist](https://packagist.org/packages/findyourspirit/fys-sdk-php) |
 | fys-sdk-py     | Python               | [fys-sdk-py](https://github.com/FindYourSpirit/fys-sdk-py)         | [PyPI](https://pypi.org/project/fys-sdk-py) |
 | fys-sdk        | .NET                 | [fys-sdk](https://github.com/FindYourSpirit/fys-sdk)               | [NuGet](https://www.nuget.org/packages/fys-sdk)       |
-| fys-sdk-pypi   | PyPI                 | [fys-sdk-pypi](https://github.com/FindYourSpirit/fys-sdk-pypi)     | [PyPI](https://pypi.org/project/fys-sdk-pypi) |
 
 
 Whether you prefer working with JavaScript, PHP, Python, or .NET, we've got you covered. Our SDKs provide intuitive APIs and helpful documentation, making it seamless for both hotels and individuals, along with guests, working in the hospitality sector to leverage our services and enhance customer engagement.
