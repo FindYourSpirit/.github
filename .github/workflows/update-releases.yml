@@ -87,7 +87,7 @@ jobs:
 
               const mdTable = generateTable(releases);
 
-              const readmePath = path.join(process.env.GITHUB_WORKSPACE, ".github", "profile", "README.md");
+             const readmePath = path.join(process.env.GITHUB_WORKSPACE, "profile", "README.md");
               await fs.readFile(readmePath, "utf8")
                 .then((data) => {
                   const updatedReadme = data.replace(/<!-- START_SDK_RELEASES -->[\s\S]*<!-- END_SDK_RELEASES -->/, `<!-- START_SDK_RELEASES -->\\n${mdTable}\\n<!-- END_SDK_RELEASES -->`);
