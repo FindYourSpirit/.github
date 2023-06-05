@@ -24,7 +24,10 @@ Feel free to reach out to us if you have any questions or need assistance. We lo
 Our offerings include SDKs for multiple platforms and ecosystems, allowing developers to easily integrate our services into their projects regardless of the technology stack they are using.
 
 <!-- START_SDK_RELEASES -->
+| SDK | Platform / Ecosystem | GitHub Repository | Package Hosting | Release |
+| --- | ------------------- | ----------------- | --------------- | ------- |
 <!-- END_SDK_RELEASES -->
+
 
 ## Accessing Our Services: Free Trial and Access Plans
 At our organization, we are committed to providing you with exceptional tools and services for the hotel industry. In order to fully utilize our APIs and take advantage of our extensive feature set, we offer flexible options to accommodate your needs.
