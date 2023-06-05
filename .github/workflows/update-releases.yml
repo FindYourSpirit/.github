@@ -116,9 +116,7 @@ jobs:
 
       - name: Update README.md
         run: |
-          npm install markdown-table --global
-          npm install fs-extra --global
-          npm install path --global
+          npm install markdown-table fs-extra path
 
           const releases = [];
 
