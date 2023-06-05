@@ -81,17 +81,12 @@ jobs:
               .map((row) => `| ${row.join(" | ")} |`)
               .join("\n");
 
-            return `<!-- START_SDK_RELEASES -->\n\n${tableContent}\n\n<!-- END_SDK_RELEASES -->`;
+            return tableContent;
           };
-
-
-
-
 
 
           const fetchLatestReleases = async () => {
             const releases = await getLatestReleases();
-
             const mdTable = generateTable(releases);
 
             const readmePath = path.join(process.env.GITHUB_WORKSPACE, "profile", "README.md");
@@ -100,7 +95,7 @@ jobs:
             const readmeContent = await fs.readFile(readmePath, "utf8");
             console.log("Readme Contents:", readmeContent);
 
-            const updatedReadme = readmeContent.replace(/<!-- START_SDK_RELEASES -->[^]*<!-- END_SDK_RELEASES -->/, `<!-- START_SDK_RELEASES -->\n${mdTable}\n<!-- END_SDK_RELEASES -->`);
+            const updatedReadme = readmeContent.replace(/<!-- START_SDK_RELEASES -->[\s\S]*?<!-- END_SDK_RELEASES -->/, `<!-- START_SDK_RELEASES -->\n${mdTable}\n<!-- END_SDK_RELEASES -->`);
             console.log("Updated Readme Contents:", updatedReadme);
 
             await fs.writeFile(readmePath, updatedReadme, "utf8");
