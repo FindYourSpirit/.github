@@ -41,13 +41,13 @@ jobs:
         uses: actions/github-script@v4
         with:
           script: |
-            const response = await github.repos.getLatestRelease({
+            const releases = await github.repos.listReleases({
               owner: 'FindYourSpirit',
               repo: 'fys-sdk-php'
             });
-            
+
             const latestRelease = releases.data[0]; // Assuming the latest release is at index 0
-            
+
             if (latestRelease) {
               const releaseTag = latestRelease.tag_name;
               const releaseDate = latestRelease.published_at;
@@ -55,6 +55,7 @@ jobs:
             } else {
               return { tag: 'No releases found', date: 'N/A' };
             }
+
 
       # Fetch latest release for fys-sdk-py
       - name: Fetch latest release for fys-sdk-py
