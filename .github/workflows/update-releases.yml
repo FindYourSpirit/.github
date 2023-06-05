@@ -21,12 +21,12 @@ jobs:
         uses: actions/github-script@v4
         with:
           script: |
-            const { data } = await github.repos.listReleases({
+            const releases = await github.repos.listReleases({
               owner: 'FindYourSpirit',
               repo: 'fys-sdk-nodejs'
             });
 
-            const latestRelease = data[0]; // Assuming the latest release is at index 0
+            const latestRelease = releases.data[0]; // Assuming the latest release is at index 0
 
             if (latestRelease) {
               const releaseTag = latestRelease.tag_name;
@@ -41,19 +41,24 @@ jobs:
         uses: actions/github-script@v4
         with:
           script: |
-            const { data } = await github.repos.listReleases({
-              owner: 'FindYourSpirit',
-              repo: 'fys-sdk-php'
-            });
+            try {
+              const releases = await github.repos.listReleases({
+                owner: 'FindYourSpirit',
+                repo: 'fys-sdk-php'
+              });
 
-            const latestRelease = data[0]; // Assuming the latest release is at index 0
+              const latestRelease = releases.data[0]; // Assuming the latest release is at index 0
 
-            if (latestRelease) {
-              const releaseTag = latestRelease.tag_name;
-              const releaseDate = latestRelease.published_at;
-              return { tag: releaseTag, date: releaseDate };
-            } else {
-              return { tag: 'No releases found', date: 'N/A' };
+              if (latestRelease) {
+                const releaseTag = latestRelease.tag_name;
+                const releaseDate = latestRelease.published_at;
+                return { tag: releaseTag, date: releaseDate };
+              } else {
+                return { tag: 'No releases found', date: 'N/A' };
+              }
+            } catch (error) {
+              console.error('Error fetching latest release for fys-sdk-php:', error);
+              return { tag: 'Error', date: 'N/A' };
             }
 
       - name: Fetch latest release for fys-sdk-py
@@ -61,19 +66,24 @@ jobs:
         uses: actions/github-script@v4
         with:
           script: |
-            const { data } = await github.repos.listReleases({
-              owner: 'FindYourSpirit',
-              repo: 'fys-sdk-py'
-            });
+            try {
+              const releases = await github.repos.listReleases({
+                owner: 'FindYourSpirit',
+                repo: 'fys-sdk-py'
+              });
 
-            const latestRelease = data[0]; // Assuming the latest release is at index 0
+              const latestRelease = releases.data[0]; // Assuming the latest release is at index 0
 
-            if (latestRelease) {
-              const releaseTag = latestRelease.tag_name;
-              const releaseDate = latestRelease.published_at;
-              return { tag: releaseTag, date: releaseDate };
-            } else {
-              return { tag: 'No releases found', date: 'N/A' };
+              if (latestRelease) {
+                const releaseTag = latestRelease.tag_name;
+                const releaseDate = latestRelease.published_at;
+                return { tag: releaseTag, date: releaseDate };
+              } else {
+                return { tag: 'No releases found', date: 'N/A' };
+              }
+            } catch (error) {
+              console.error('Error fetching latest release for fys-sdk-py:', error);
+              return { tag: 'Error', date: 'N/A' };
             }
 
       - name: Fetch latest release for fys-sdk
@@ -81,19 +91,24 @@ jobs:
         uses: actions/github-script@v4
         with:
           script: |
-            const { data } = await github.repos.listReleases({
-              owner: 'FindYourSpirit',
-              repo: 'fys-sdk'
-            });
+            try {
+              const releases = await github.repos.listReleases({
+                owner: 'FindYourSpirit',
+                repo: 'fys-sdk'
+              });
 
-            const latestRelease = data[0]; // Assuming the latest release is at index 0
+              const latestRelease = releases.data[0]; // Assuming the latest release is at index 0
 
-            if (latestRelease) {
-              const releaseTag = latestRelease.tag_name;
-              const releaseDate = latestRelease.published_at;
-              return { tag: releaseTag, date: releaseDate };
-            } else {
-              return { tag: 'No releases found', date: 'N/A' };
+              if (latestRelease) {
+                const releaseTag = latestRelease.tag_name;
+                const releaseDate = latestRelease.published_at;
+                return { tag: releaseTag, date: releaseDate };
+              } else {
+                return { tag: 'No releases found', date: 'N/A' };
+              }
+            } catch (error) {
+              console.error('Error fetching latest release for fys-sdk:', error);
+              return { tag: 'Error', date: 'N/A' };
             }
 
       - name: Update README.md
@@ -105,28 +120,27 @@ jobs:
 
           const getLatestRelease = async (repoName, repoUrl) => {
             try {
-              const { data } = await github.repos.listReleases({
+              const response = await github.repos.getLatestRelease({
                 owner: 'FindYourSpirit',
                 repo: repoName
               });
+              const releaseTag = response.data.tag_name;
+              const releaseDate = response.data.published_at;
 
-              const latestRelease = data[0]; // Assuming the latest release is at index 0
-
-              if (latestRelease) {
-                const releaseTag = latestRelease.tag_name;
-                const releaseDate = latestRelease.published_at;
-
-                releases.push({
-                  repo: repoName,
-                  tag: releaseTag,
-                  date: releaseDate,
-                  url: repoUrl
-                });
-              } else {
-                console.error('No releases found for', repoName);
-              }
+              releases.push({
+                repo: repoName,
+                tag: releaseTag,
+                date: releaseDate,
+                url: repoUrl
+              });
             } catch (error) {
               console.error('Error fetching latest release for', repoName, error);
+              releases.push({
+                repo: repoName,
+                tag: 'No releases found',
+                date: 'N/A',
+                url: repoUrl
+              });
             }
           };
 
@@ -167,23 +181,23 @@ jobs:
               addTableRow('fys-sdk-py', 'Python', 'https://github.com/FindYourSpirit/fys-sdk-py', 'https://pypi.org/project/fys-sdk-py');
               addTableRow('fys-sdk', '.NET', 'https://github.com/FindYourSpirit/fys-sdk', 'https://www.nuget.org/packages/fys-sdk');
 
-              const md = markdownTable(tableData);
+              const md = markdownTable(tableData, {
+                align: ['l', 'l', 'l', 'l', 'l']
+              });
 
-              const readmePath = path.resolve(__dirname, 'profile/README.md');
-              let readmeContent = fs.readFileSync(readmePath, 'utf8');
-
-              // Update the table in README.md
-              const tableStartMarker = '<!-- SDK Table Start -->';
-              const tableEndMarker = '<!-- SDK Table End -->';
-              const tableRegex = new RegExp(\`${tableStartMarker}[\\s\\S]*${tableEndMarker}\`);
-              const updatedReadmeContent = readmeContent.replace(tableRegex, \`${tableStartMarker}\\n\${md}\\n${tableEndMarker}\`);
-
-              fs.writeFileSync(readmePath, updatedReadmeContent);
-
-              console.log('README.md updated successfully.');
+              const readmePath = path.join(process.cwd(), 'README.md');
+              fs.readFile(readmePath, 'utf8')
+                .then((data) => {
+                  const updatedReadme = data.replace(/<!-- START_SDK_RELEASES -->[\s\S]*<!-- END_SDK_RELEASES -->/, \`<!-- START_SDK_RELEASES -->\\n\${md}\\n<!-- END_SDK_RELEASES -->\`);
+                  return fs.writeFile(readmePath, updatedReadme, 'utf8');
+                })
+                .catch((error) => {
+                  console.error('Error updating README.md', error);
+                  process.exit(1);
+                });
             })
             .catch((error) => {
-              console.error('Error:', error);
+              console.error('Error fetching latest releases', error);
               process.exit(1);
             });
           "
