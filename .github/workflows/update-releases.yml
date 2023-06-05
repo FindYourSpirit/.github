@@ -82,26 +82,24 @@ jobs:
               return tableData.map((row) => `| ${row.join(" | ")} |`).join("\n");
             };
 
-          const fetchLatestReleases = async () => {
-            const releases = await getLatestReleases();
+            const fetchLatestReleases = async () => {
+              const releases = await getLatestReleases();
 
-            const mdTable = generateTable(releases);
+              const mdTable = generateTable(releases);
 
-            const readmePath = path.join(process.env.GITHUB_WORKSPACE, "profile", "README.md");
-            console.log("Readme Path:", readmePath);
+              const readmePath = path.join(process.env.GITHUB_WORKSPACE, "profile", "README.md");
+              console.log("Readme Path:", readmePath);
 
-            const readmeContent = await fs.readFile(readmePath, "utf8");
-            const updatedReadme = readmeContent.replace(/<!-- START_SDK_RELEASES -->[\s\S]*<!-- END_SDK_RELEASES -->/, `<!-- START_SDK_RELEASES -->\n${mdTable}\n<!-- END_SDK_RELEASES -->`);
+              const readmeContent = await fs.readFile(readmePath, "utf8");
+              const updatedReadme = readmeContent.replace(/(## Our Code Base[\s\S]*<!-- START_SDK_RELEASES -->\n)[\s\S]*(\n<!-- END_SDK_RELEASES -->)/, `$1${mdTable}$2`);
 
-            await fs.writeFile(readmePath, updatedReadme, "utf8");
-            console.log("README.md updated successfully.");
-          };
+              await fs.writeFile(readmePath, updatedReadme, "utf8");
+              console.log("README.md updated successfully.");
+            };
 
-          fetchLatestReleases()
-            .catch((error) => {
-              console.error("Error:", error);
-              process.exit(1);
-            });
-
-
+            fetchLatestReleases()
+              .catch((error) => {
+                console.error("Error:", error);
+                process.exit(1);
+              });
           '
