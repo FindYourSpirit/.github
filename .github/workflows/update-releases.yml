@@ -20,14 +20,20 @@ jobs:
         uses: actions/github-script@v4
         with:
           script: |
-            const response = await github.repos.getLatestRelease({
+            const releases = await github.repos.listReleases({
               owner: 'FindYourSpirit',
               repo: 'fys-sdk-nodejs'
             });
-            const releaseTag = response.data.tag_name;
-            const releaseDate = response.data.published_at;
-
-            return { tag: releaseTag, date: releaseDate }
+            
+            const latestRelease = releases.data[0]; // Assuming the latest release is at index 0
+            
+            if (latestRelease) {
+              const releaseTag = latestRelease.tag_name;
+              const releaseDate = latestRelease.published_at;
+              return { tag: releaseTag, date: releaseDate };
+            } else {
+              return { tag: 'No releases found', date: 'N/A' };
+            }
 
       # Fetch latest release for fys-sdk-php
       - name: Fetch latest release for fys-sdk-php
@@ -39,10 +45,16 @@ jobs:
               owner: 'FindYourSpirit',
               repo: 'fys-sdk-php'
             });
-            const releaseTag = response.data.tag_name;
-            const releaseDate = response.data.published_at;
-
-            return { tag: releaseTag, date: releaseDate }
+            
+            const latestRelease = releases.data[0]; // Assuming the latest release is at index 0
+            
+            if (latestRelease) {
+              const releaseTag = latestRelease.tag_name;
+              const releaseDate = latestRelease.published_at;
+              return { tag: releaseTag, date: releaseDate };
+            } else {
+              return { tag: 'No releases found', date: 'N/A' };
+            }
 
       # Fetch latest release for fys-sdk-py
       - name: Fetch latest release for fys-sdk-py
@@ -54,10 +66,16 @@ jobs:
               owner: 'FindYourSpirit',
               repo: 'fys-sdk-py'
             });
-            const releaseTag = response.data.tag_name;
-            const releaseDate = response.data.published_at;
-
-            return { tag: releaseTag, date: releaseDate }
+            
+            const latestRelease = releases.data[0]; // Assuming the latest release is at index 0
+            
+            if (latestRelease) {
+              const releaseTag = latestRelease.tag_name;
+              const releaseDate = latestRelease.published_at;
+              return { tag: releaseTag, date: releaseDate };
+            } else {
+              return { tag: 'No releases found', date: 'N/A' };
+            }
 
       # Fetch latest release for fys-sdk
       - name: Fetch latest release for fys-sdk
@@ -69,10 +87,16 @@ jobs:
               owner: 'FindYourSpirit',
               repo: 'fys-sdk'
             });
-            const releaseTag = response.data.tag_name;
-            const releaseDate = response.data.published_at;
 
-            return { tag: releaseTag, date: releaseDate }
+            const latestRelease = releases.data[0]; // Assuming the latest release is at index 0
+            
+            if (latestRelease) {
+              const releaseTag = latestRelease.tag_name;
+              const releaseDate = latestRelease.published_at;
+              return { tag: releaseTag, date: releaseDate };
+            } else {
+              return { tag: 'No releases found', date: 'N/A' };
+            }
 
       - name: Update README.md
         run: |
@@ -80,23 +104,68 @@ jobs:
           npm install fs-extra --global
           npm install path --global
 
-          SDK_NODEJS="| fys-sdk-nodejs | Node.js | [fys-sdk-nodejs](https://github.com/FindYourSpirit/fys-sdk-nodejs) | [npm](https://www.npmjs.com/package/fys-sdk-nodejs) |"
-          SDK_PHP="| fys-sdk-php | PHP | [fys-sdk-php](https://github.com/FindYourSpirit/fys-sdk-php) | [Packagist](https://packagist.org/packages/findyourspirit/fys-sdk-php) |"
-          SDK_PYTHON="| fys-sdk-py | Python | [fys-sdk-py](https://github.com/FindYourSpirit/fys-sdk-py) | [PyPI](https://pypi.org/project/fys-sdk-py) |"
-          SDK_DOTNET="| fys-sdk | .NET | [fys-sdk](https://github.com/FindYourSpirit/fys-sdk) | [NuGet](https://www.nuget.org/packages/fys-sdk) |"
+          const releases = [];
 
-          markdown-table -s -c "SDK | Platform / Ecosystem | GitHub Repository | Package Hosting" \
-            -i "${SDK_NODEJS}" \
-            -i "${SDK_PHP}" \
-            -i "${SDK_PYTHON}" \
-            -i "${SDK_DOTNET}" > table.md
+          const getLatestRelease = async (repoName, repoUrl) => {
+            try {
+              const response = await github.repos.getLatestRelease({
+                owner: 'FindYourSpirit',
+                repo: repoName
+              });
+              const releaseTag = response.data.tag_name;
+              const releaseDate = response.data.published_at;
 
+              releases.push({
+                repo: repoName,
+                tag: releaseTag,
+                date: releaseDate,
+                url: repoUrl
+              });
+            } catch (error) {
+              console.error(`Error fetching latest release for ${repoName}:`, error);
+            }
+          };
+
+          const fetchLatestReleases = async () => {
+            await getLatestRelease('fys-sdk-nodejs', 'https://github.com/FindYourSpirit/fys-sdk-nodejs');
+            await getLatestRelease('fys-sdk-php', 'https://github.com/FindYourSpirit/fys-sdk-php');
+            await getLatestRelease('fys-sdk-py', 'https://github.com/FindYourSpirit/fys-sdk-py');
+            await getLatestRelease('fys-sdk', 'https://github.com/FindYourSpirit/fys-sdk');
+          };
+
+          await fetchLatestReleases();
+
+          const markdownTable = require('markdown-table');
           const fs = require('fs-extra');
           const path = require('path');
 
-          const md = fs.readFileSync(path.resolve(__dirname, 'table.md'), 'utf8');
-          const readmePath = path.resolve(__dirname, 'profile/README.md');
+          const tableData = [
+            ['SDK', 'Platform / Ecosystem', 'GitHub Repository', 'Package Hosting', 'Latest Release']
+          ];
 
+          const createRow = (repoName, platform, repoUrl, packageHosting, latestRelease) => {
+            const row = [repoName, platform, repoUrl, packageHosting, latestRelease];
+            tableData.push(row);
+          };
+
+          const addTableRow = (repo, platform, repoUrl, packageHosting) => {
+            const release = releases.find((r) => r.repo === repo);
+
+            if (release) {
+              createRow(repo, platform, repoUrl, packageHosting, `[${release.tag}](${release.url})`);
+            } else {
+              createRow(repo, platform, repoUrl, packageHosting, 'No releases found');
+            }
+          };
+
+          addTableRow('fys-sdk-nodejs', 'Node.js', 'https://github.com/FindYourSpirit/fys-sdk-nodejs', 'https://www.npmjs.com/package/fys-sdk-nodejs');
+          addTableRow('fys-sdk-php', 'PHP', 'https://github.com/FindYourSpirit/fys-sdk-php', 'https://packagist.org/packages/findyourspirit/fys-sdk-php');
+          addTableRow('fys-sdk-py', 'Python', 'https://github.com/FindYourSpirit/fys-sdk-py', 'https://pypi.org/project/fys-sdk-py');
+          addTableRow('fys-sdk', '.NET', 'https://github.com/FindYourSpirit/fys-sdk', 'https://www.nuget.org/packages/fys-sdk');
+
+          const md = markdownTable(tableData);
+
+          const readmePath = path.resolve(__dirname, 'profile/README.md');
           let readmeContent = fs.readFileSync(readmePath, 'utf8');
 
           // Update the table in README.md
@@ -108,3 +177,4 @@ jobs:
           fs.writeFileSync(readmePath, updatedReadmeContent);
 
           console.log('README.md updated successfully.');
+
