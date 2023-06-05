@@ -39,31 +39,31 @@ jobs:
 
             const excludedRepos = [".github", "fys-forum"];
 
-            const getLatestRelease = async (owner, repo) => {
+            const getLatestReleases = async () => {
               try {
+                const owner = process.env.GITHUB_REPOSITORY.split("/")[0];
+                const repo = process.env.GITHUB_REPOSITORY.split("/")[1];
                 const releases = await octokit.request("GET /repos/{owner}/{repo}/releases", {
                   owner,
                   repo,
                 });
 
                 if (releases.data.length > 0) {
-                  const latestRelease = releases.data[0];
-                  const releaseTag = latestRelease.tag_name;
-                  const releaseDate = latestRelease.published_at;
-                  return { tag: releaseTag, date: releaseDate };
+                  return releases.data.map((release) => ({
+                    tag: release.tag_name,
+                    date: release.published_at,
+                  }));
                 } else {
-                  return { tag: "No releases found", date: "N/A" };
+                  return [{ tag: "No releases found", date: "N/A" }];
                 }
               } catch (error) {
-                console.error("Error fetching latest release for", repo, error);
-                return { tag: "Error", date: "N/A" };
+                console.error("Error fetching latest releases:", error);
+                return [{ tag: "Error", date: "N/A" }];
               }
             };
 
             const fetchLatestReleases = async () => {
-              const owner = process.env.GITHUB_REPOSITORY.split("/")[0];
-              const repo = process.env.GITHUB_REPOSITORY.split("/")[1];
-              const releases = await getLatestRelease(owner, repo);
+              const releases = await getLatestReleases();
 
               const tableData = releases.map((release) => [release.tag, release.date]);
 
@@ -78,7 +78,7 @@ jobs:
                   return fs.writeFile(readmePath, updatedReadme, "utf8");
                 })
                 .catch((error) => {
-                  console.error("Error updating README.md", error);
+                  console.error("Error updating README.md:", error);
                   process.exit(1);
                 });
             };
