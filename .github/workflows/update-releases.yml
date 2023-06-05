@@ -79,8 +79,11 @@ jobs:
 
               const tableData = [tableHeaders, ...tableRows];
 
-              return tableData.map((row) => `| ${row.join(" | ")} |`).join("\n");
+              const table = tableData.map((row) => `| ${row.join(" | ")} |`).join("\n");
+
+              return table;
             };
+
 
 
             const fetchLatestReleases = async () => {
