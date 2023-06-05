@@ -29,79 +29,81 @@ jobs:
         run: |
           npm install @octokit/core markdown-table fs-extra path
 
-          const { Octokit } = require('@octokit/core');
-          const markdownTable = require('markdown-table');
-          const fs = require('fs-extra');
-          const path = require('path');
+          node -e '
+            const { Octokit } = require("@octokit/core");
+            const markdownTable = require("markdown-table");
+            const fs = require("fs-extra");
+            const path = require("path");
 
-          const octokit = new Octokit();
+            const octokit = new Octokit();
 
-          const excludedRepos = ['.github', 'fys-forum'];
+            const excludedRepos = [".github", "fys-forum"];
 
-          const getLatestRelease = async (owner, repo) => {
-            try {
-              const releases = await octokit.request('GET /repos/{owner}/{repo}/releases', {
-                owner,
-                repo,
+            const getLatestRelease = async (owner, repo) => {
+              try {
+                const releases = await octokit.request("GET /repos/{owner}/{repo}/releases", {
+                  owner,
+                  repo,
+                });
+
+                if (releases.data.length > 0) {
+                  const latestRelease = releases.data[0];
+                  const releaseTag = latestRelease.tag_name;
+                  const releaseDate = latestRelease.published_at;
+                  return { tag: releaseTag, date: releaseDate };
+                } else {
+                  return { tag: "No releases found", date: "N/A" };
+                }
+              } catch (error) {
+                console.error("Error fetching latest release for", repo, error);
+                return { tag: "Error", date: "N/A" };
+              }
+            };
+
+            const fetchLatestReleases = async () => {
+              const org = "FindYourSpirit";
+              const repositories = await octokit.request("GET /orgs/{org}/repos", { org });
+
+              const tableData = [
+                ["SDK", "Platform / Ecosystem", "GitHub Repository", "Package Hosting", "Latest Release"],
+              ];
+
+              for (const repository of repositories.data) {
+                if (!excludedRepos.includes(repository.name)) {
+                  const latestRelease = await getLatestRelease(org, repository.name);
+                  const row = [
+                    repository.name,
+                    repository.language || "N/A",
+                    repository.html_url,
+                    `https://www.npmjs.com/package/${repository.name}`,
+                    latestRelease.tag !== "No releases found" ? `[${latestRelease.tag}](${repository.html_url})` : "No releases found",
+                  ];
+                  tableData.push(row);
+                }
+              }
+
+              const md = markdownTable(tableData, {
+                align: ["l", "l", "l", "l", "l"],
               });
 
-              if (releases.data.length > 0) {
-                const latestRelease = releases.data[0];
-                const releaseTag = latestRelease.tag_name;
-                const releaseDate = latestRelease.published_at;
-                return { tag: releaseTag, date: releaseDate };
-              } else {
-                return { tag: 'No releases found', date: 'N/A' };
-              }
-            } catch (error) {
-              console.error('Error fetching latest release for', repo, error);
-              return { tag: 'Error', date: 'N/A' };
-            }
-          };
+              const readmePath = path.join(process.cwd(), ".github", "profile", "README.md");
+              await fs.readFile(readmePath, "utf8")
+                .then((data) => {
+                  const updatedReadme = data.replace(/<!-- START_SDK_RELEASES -->[\s\S]*<!-- END_SDK_RELEASES -->/, `<!-- START_SDK_RELEASES -->\n${md}\n<!-- END_SDK_RELEASES -->`);
+                  return fs.writeFile(readmePath, updatedReadme, "utf8");
+                })
+                .catch((error) => {
+                  console.error("Error updating README.md", error);
+                  process.exit(1);
+                });
+            };
 
-          const fetchLatestReleases = async () => {
-            const org = 'FindYourSpirit';
-            const repositories = await octokit.request('GET /orgs/{org}/repos', { org });
-
-            const tableData = [
-              ['SDK', 'Platform / Ecosystem', 'GitHub Repository', 'Package Hosting', 'Latest Release'],
-            ];
-
-            for (const repository of repositories.data) {
-              if (!excludedRepos.includes(repository.name)) {
-                const latestRelease = await getLatestRelease(org, repository.name);
-                const row = [
-                  repository.name,
-                  repository.language || 'N/A',
-                  repository.html_url,
-                  `https://www.npmjs.com/package/${repository.name}`,
-                  latestRelease.tag !== 'No releases found' ? `[${latestRelease.tag}](${repository.html_url})` : 'No releases found',
-                ];
-                tableData.push(row);
-              }
-            }
-
-            const md = markdownTable(tableData, {
-              align: ['l', 'l', 'l', 'l', 'l'],
-            });
-
-            const readmePath = path.join(process.cwd(), '.github', 'profile', 'README.md');
-            await fs.readFile(readmePath, 'utf8')
-              .then((data) => {
-                const updatedReadme = data.replace(/<!-- START_SDK_RELEASES -->[\s\S]*<!-- END_SDK_RELEASES -->/, `<!-- START_SDK_RELEASES -->\n${md}\n<!-- END_SDK_RELEASES -->`);
-                return fs.writeFile(readmePath, updatedReadme, 'utf8');
+            fetchLatestReleases()
+              .then(() => {
+                console.log("README.md updated successfully.");
               })
               .catch((error) => {
-                console.error('Error updating README.md', error);
+                console.error("Error:", error);
                 process.exit(1);
               });
-          };
-
-          fetchLatestReleases()
-            .then(() => {
-              console.log('README.md updated successfully.');
-            })
-            .catch((error) => {
-              console.error('Error:', error);
-              process.exit(1);
-            });
+          '
