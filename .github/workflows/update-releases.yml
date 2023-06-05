@@ -1,10 +1,8 @@
-name: Update Releases
-
 on:
   push:
     branches:
-      - main
-      - master
+      - 'main'
+      - 'master'
   schedule:
     - cron: "0 0 * * *"
 
@@ -16,6 +14,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      # Fetch latest release for fys-sdk-nodejs
       - name: Fetch latest release for fys-sdk-nodejs
         id: nodejs
         uses: actions/github-script@v4
@@ -30,6 +29,7 @@ jobs:
 
             return { tag: releaseTag, date: releaseDate }
 
+      # Fetch latest release for fys-sdk-php
       - name: Fetch latest release for fys-sdk-php
         id: php
         uses: actions/github-script@v4
@@ -44,6 +44,7 @@ jobs:
 
             return { tag: releaseTag, date: releaseDate }
 
+      # Fetch latest release for fys-sdk-py
       - name: Fetch latest release for fys-sdk-py
         id: py
         uses: actions/github-script@v4
@@ -58,6 +59,7 @@ jobs:
 
             return { tag: releaseTag, date: releaseDate }
 
+      # Fetch latest release for fys-sdk
       - name: Fetch latest release for fys-sdk
         id: dotnet
         uses: actions/github-script@v4
