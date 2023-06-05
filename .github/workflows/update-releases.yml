@@ -1,0 +1,107 @@
+name: Update Releases
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Fetch latest release for fys-sdk-nodejs
+        id: nodejs
+        uses: actions/github-script@v4
+        with:
+          script: |
+            const response = await github.repos.getLatestRelease({
+              owner: 'FindYourSpirit',
+              repo: 'fys-sdk-nodejs'
+            });
+            const releaseTag = response.data.tag_name;
+            const releaseDate = response.data.published_at;
+
+            return { tag: releaseTag, date: releaseDate }
+
+      - name: Fetch latest release for fys-sdk-php
+        id: php
+        uses: actions/github-script@v4
+        with:
+          script: |
+            const response = await github.repos.getLatestRelease({
+              owner: 'FindYourSpirit',
+              repo: 'fys-sdk-php'
+            });
+            const releaseTag = response.data.tag_name;
+            const releaseDate = response.data.published_at;
+
+            return { tag: releaseTag, date: releaseDate }
+
+      - name: Fetch latest release for fys-sdk-py
+        id: py
+        uses: actions/github-script@v4
+        with:
+          script: |
+            const response = await github.repos.getLatestRelease({
+              owner: 'FindYourSpirit',
+              repo: 'fys-sdk-py'
+            });
+            const releaseTag = response.data.tag_name;
+            const releaseDate = response.data.published_at;
+
+            return { tag: releaseTag, date: releaseDate }
+
+      - name: Fetch latest release for fys-sdk
+        id: dotnet
+        uses: actions/github-script@v4
+        with:
+          script: |
+            const response = await github.repos.getLatestRelease({
+              owner: 'FindYourSpirit',
+              repo: 'fys-sdk'
+            });
+            const releaseTag = response.data.tag_name;
+            const releaseDate = response.data.published_at;
+
+            return { tag: releaseTag, date: releaseDate }
+
+      - name: Update README.md
+        run: |
+          npm install markdown-table --global
+          npm install fs-extra --global
+          npm install path --global
+
+          SDK_NODEJS="| fys-sdk-nodejs | Node.js | [fys-sdk-nodejs](https://github.com/FindYourSpirit/fys-sdk-nodejs) | [npm](https://www.npmjs.com/package/fys-sdk-nodejs) |"
+          SDK_PHP="| fys-sdk-php | PHP | [fys-sdk-php](https://github.com/FindYourSpirit/fys-sdk-php) | [Packagist](https://packagist.org/packages/findyourspirit/fys-sdk-php) |"
+          SDK_PYTHON="| fys-sdk-py | Python | [fys-sdk-py](https://github.com/FindYourSpirit/fys-sdk-py) | [PyPI](https://pypi.org/project/fys-sdk-py) |"
+          SDK_DOTNET="| fys-sdk | .NET | [fys-sdk](https://github.com/FindYourSpirit/fys-sdk) | [NuGet](https://www.nuget.org/packages/fys-sdk) |"
+
+          markdown-table -s -c "SDK | Platform / Ecosystem | GitHub Repository | Package Hosting" \
+            -i "${SDK_NODEJS}" \
+            -i "${SDK_PHP}" \
+            -i "${SDK_PYTHON}" \
+            -i "${SDK_DOTNET}" > table.md
+
+          const fs = require('fs-extra');
+          const path = require('path');
+
+          const md = fs.readFileSync(path.resolve(__dirname, 'table.md'), 'utf8');
+          const readmePath = path.resolve(__dirname, 'profile/README.md');
+
+          let readmeContent = fs.readFileSync(readmePath, 'utf8');
+
+          // Update the table in README.md
+          const tableStartMarker = '<!-- SDK Table Start -->';
+          const tableEndMarker = '<!-- SDK Table End -->';
+          const tableRegex = new RegExp(`${tableStartMarker}[\\s\\S]*${tableEndMarker}`);
+          const updatedReadmeContent = readmeContent.replace(tableRegex, `${tableStartMarker}\n${md}\n${tableEndMarker}`);
+
+          fs.writeFileSync(readmePath, updatedReadmeContent);
+
+          console.log('README.md updated successfully.');
