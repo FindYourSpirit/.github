@@ -49,7 +49,7 @@ jobs:
 
                 if (releases.data.length > 0) {
                   return releases.data.map((release) => ({
-                    repo: release.repo, // Update this line
+                    repo, // Update this line
                     platform: "", // Update with the respective platform/ecosystem
                     packageHosting: "", // Update with the respective package hosting
                     tag: release.tag_name,
@@ -63,6 +63,7 @@ jobs:
                 return [{ tag: "Error", releaseUrl: "N/A" }];
               }
             };
+
 
 
             const generateTable = (releases) => {
