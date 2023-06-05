@@ -110,9 +110,11 @@ jobs:
               return tableContent;
             };
 
-            const releases = await fetchLatestReleases();
-            const tableContent = generateTable(releases);
+            (async () => {
+              const releases = await fetchLatestReleases();
+              const tableContent = generateTable(releases);
 
-            // Write the table content to README.md
-            fs.writeFileSync(path.join(__dirname, "README.md"), tableContent);
+              // Write the table content to README.md
+              fs.writeFileSync(path.join(__dirname, "README.md"), tableContent);
+            })();
           '
