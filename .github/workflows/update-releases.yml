@@ -42,11 +42,15 @@ jobs:
               try {
                 const owner = "FindYourSpirit";
                 const repo = process.env.GITHUB_REPOSITORY.split("/")[1];
+                console.log("Owner:", owner);
+                console.log("Repo:", repo);
+
                 const releases = await octokit.request("GET /repos/{owner}/{repo}/releases", {
                   owner,
                   repo,
                 });
-                
+                console.log("Releases:", releases);
+
                 if (releases.data.length > 0) {
                   return releases.data.map((release) => ({
                     repo,
@@ -64,29 +68,38 @@ jobs:
               }
             };
 
-          const generateTable = (releases) => {
-            const tableHeaders = ["SDK", "Platform / Ecosystem", "GitHub Repository", "Package Hosting", "Release"];
 
-            const tableRows = releases
-              .filter((release) => !excludedRepos.includes(release.repo))
-              .map((release) => [
-                release.repo,
-                release.platform || "", // Provide a default value for platform if it is not available
-                `[${release.repo}](https://github.com/FindYourSpirit/${release.repo})`,
-                release.packageHosting || "", // Provide a default value for packageHosting if it is not available
-                `[${release.tag}](${release.releaseUrl})`,
-              ]);
+            const generateTable = (releases) => {
+              const tableHeaders = ["SDK", "Platform / Ecosystem", "GitHub Repository", "Package Hosting", "Release"];
 
-            const tableContent = [tableHeaders, ...tableRows]
-              .map((row) => `| ${row.join(" | ")} |`)
-              .join("\n");
+              console.log("Table Headers:", tableHeaders);
 
-            return tableContent;
-          };
+              const tableRows = releases
+                .filter((release) => !excludedRepos.includes(release.repo))
+                .map((release) => [
+                  release.repo,
+                  release.platform || "", // Provide a default value for platform if it is not available
+                  `[${release.repo}](https://github.com/FindYourSpirit/${release.repo})`,
+                  release.packageHosting || "", // Provide a default value for packageHosting if it is not available
+                  `[${release.tag}](${release.releaseUrl})`,
+                ]);
+
+              console.log("Table Rows:", tableRows);
+
+              const tableContent = [tableHeaders, ...tableRows]
+                .map((row) => `| ${row.join(" | ")} |`)
+                .join("\n");
+
+              console.log("Table Content:", tableContent);
+
+              return tableContent;
+            };
+
 
 
           const fetchLatestReleases = async () => {
             const releases = await getLatestReleases();
+
             const mdTable = generateTable(releases);
 
             const readmePath = path.join(process.env.GITHUB_WORKSPACE, "profile", "README.md");
