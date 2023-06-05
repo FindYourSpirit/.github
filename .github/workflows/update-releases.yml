@@ -71,9 +71,9 @@ jobs:
                 .filter((release) => !excludedRepos.includes(release.repo))
                 .map((release) => [
                   release.repo,
-                  release.platform,
-                  `[${release.repo}](https://github.com/${process.env.GITHUB_REPOSITORY})`,
-                  release.packageHosting,
+                  release.platform || "", // Provide a default value for platform if it is not available
+                  `[${release.repo}](https://github.com/${owner}/${release.repo})`,
+                  release.packageHosting || "", // Provide a default value for packageHosting if it is not available
                   `[${release.tag}](${release.releaseUrl})`,
                 ]);
 
@@ -81,6 +81,7 @@ jobs:
 
               return tableData.map((row) => `| ${row.join(" | ")} |`).join("\n");
             };
+
 
             const fetchLatestReleases = async () => {
               const releases = await getLatestReleases();
