@@ -40,7 +40,7 @@ jobs:
 
             const getLatestReleases = async () => {
               try {
-                const owner = process.env.GITHUB_REPOSITORY.split("/")[0];
+                const owner = process.env.GITHUB_ACTOR;
                 const repo = process.env.GITHUB_REPOSITORY.split("/")[1];
                 const releases = await octokit.request("GET /repos/{owner}/{repo}/releases", {
                   owner,
@@ -49,18 +49,18 @@ jobs:
 
                 if (releases.data.length > 0) {
                   return releases.data.map((release) => ({
-                    repo, // Update this line
+                    repo,
                     platform: "", // Update with the respective platform/ecosystem
                     packageHosting: "", // Update with the respective package hosting
                     tag: release.tag_name,
-                    releaseUrl: release.html_url, // Update this line
+                    releaseUrl: release.html_url,
                   }));
                 } else {
-                  return [{ repo, tag: "No releases found", releaseUrl: "N/A" }]; // Update this line
+                  return [{ repo, tag: "No releases found", releaseUrl: "N/A" }];
                 }
               } catch (error) {
                 console.error("Error fetching latest releases:", error);
-                return [{ repo, tag: "Error", releaseUrl: "N/A" }]; // Update this line
+                return [{ repo, tag: "Error", releaseUrl: "N/A" }];
               }
             };
 
@@ -72,7 +72,7 @@ jobs:
                 .map((release) => [
                   release.repo,
                   release.platform,
-                  `[${release.repo}](https://github.com/FindYourSpirit/${release.repo})`,
+                  `[${release.repo}](https://github.com/${process.env.GITHUB_REPOSITORY})`,
                   release.packageHosting,
                   `[${release.tag}](${release.releaseUrl})`,
                 ]);
@@ -103,7 +103,7 @@ jobs:
                 });
             };
 
-            const repo = process.env.GITHUB_REPOSITORY.split("/")[1]; // Add this line to extract the repo name
+            const repo = process.env.GITHUB_REPOSITORY.split("/")[1];
             console.log("Repository:", repo);
 
             fetchLatestReleases()
@@ -116,4 +116,3 @@ jobs:
               });
 
           '
-
