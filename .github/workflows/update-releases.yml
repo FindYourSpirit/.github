@@ -1,3 +1,5 @@
+name: Update README
+
 on:
   push:
     branches:
@@ -14,7 +16,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      # Fetch latest release for fys-sdk-nodejs
       - name: Fetch latest release for fys-sdk-nodejs
         id: nodejs
         uses: actions/github-script@v4
@@ -24,9 +25,9 @@ jobs:
               owner: 'FindYourSpirit',
               repo: 'fys-sdk-nodejs'
             });
-            
+
             const latestRelease = releases.data[0]; // Assuming the latest release is at index 0
-            
+
             if (latestRelease) {
               const releaseTag = latestRelease.tag_name;
               const releaseDate = latestRelease.published_at;
@@ -35,7 +36,6 @@ jobs:
               return { tag: 'No releases found', date: 'N/A' };
             }
 
-      # Fetch latest release for fys-sdk-php
       - name: Fetch latest release for fys-sdk-php
         id: php
         uses: actions/github-script@v4
@@ -61,7 +61,6 @@ jobs:
               return { tag: 'Error', date: 'N/A' };
             }
 
-      # Fetch latest release for fys-sdk-py
       - name: Fetch latest release for fys-sdk-py
         id: py
         uses: actions/github-script@v4
@@ -87,7 +86,6 @@ jobs:
               return { tag: 'Error', date: 'N/A' };
             }
 
-      # Fetch latest release for fys-sdk
       - name: Fetch latest release for fys-sdk
         id: dotnet
         uses: actions/github-script@v4
@@ -112,7 +110,6 @@ jobs:
               console.error('Error fetching latest release for fys-sdk:', error);
               return { tag: 'Error', date: 'N/A' };
             }
-
 
       - name: Update README.md
         run: |
@@ -198,6 +195,3 @@ jobs:
               process.exit(1);
             });
           "
-
-
-
