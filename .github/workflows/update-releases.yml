@@ -49,11 +49,11 @@ jobs:
 
                 if (releases.data.length > 0) {
                   return releases.data.map((release) => ({
-                    repo,
+                    repo: release.repo, // Update this line
                     platform: "", // Update with the respective platform/ecosystem
                     packageHosting: "", // Update with the respective package hosting
                     tag: release.tag_name,
-                    releaseUrl: release.html_url,
+                    releaseUrl: release.html_url, // Update this line
                   }));
                 } else {
                   return [{ tag: "No releases found", releaseUrl: "N/A" }];
@@ -63,6 +63,7 @@ jobs:
                 return [{ tag: "Error", releaseUrl: "N/A" }];
               }
             };
+
 
             const generateTable = (releases) => {
               const tableHeaders = ["SDK", "Platform / Ecosystem", "GitHub Repository", "Package Hosting", "Release"];
