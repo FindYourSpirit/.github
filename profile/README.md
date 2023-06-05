@@ -4,7 +4,7 @@ At our organization, we foster open communities that collaborate on incredible p
 
 If you're looking to dive into open source development, we have plenty of "good first issue" opportunities available. It's a fantastic way to get involved and make a meaningful impact.
 
-Our offerings include SDKs for multiple platforms and ecosystems, allowing developers to easily integrate our services into their projects regardless of the technology stack they are using.
+
 
 | SDK            | Platform / Ecosystem | GitHub Repository                                 | Package Hosting                        |
 |----------------|----------------------|---------------------------------------------------|----------------------------------------|
@@ -19,6 +19,12 @@ Whether you prefer working with JavaScript, PHP, Python, or .NET, we've got you 
 Join us on this journey as we revolutionize the hotel industry through collaborative efforts and innovative solutions. Explore our repositories, contribute to our projects, and let's build something amazing together!
 
 Feel free to reach out to us if you have any questions or need assistance. We look forward to having you as part of our community.
+
+## Our Code Base
+Our offerings include SDKs for multiple platforms and ecosystems, allowing developers to easily integrate our services into their projects regardless of the technology stack they are using.
+<!-- START_SDK_RELEASES -->
+<!-- END_SDK_RELEASES -->
+
 
 ## Accessing Our Services: Free Trial and Access Plans
 At our organization, we are committed to providing you with exceptional tools and services for the hotel industry. In order to fully utilize our APIs and take advantage of our extensive feature set, we offer flexible options to accommodate your needs.
