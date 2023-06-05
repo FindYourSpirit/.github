@@ -31,7 +31,7 @@ jobs:
 
           node -e '
             const { Octokit } = require("@octokit/core");
-            const { execSync } = require('child_process');
+            const { execSync } = require("child_process");
             const fs = require("fs-extra");
             const path = require("path");
 
@@ -39,7 +39,10 @@ jobs:
 
             const excludedRepos = [".github", "fys-forum"];
 
-            const getLatestRelease = async (owner, repo) => {
+            const getLatestReleases = async () => {
+              const owner = process.env.GITHUB_REPOSITORY.split("/")[0];
+              const repo = process.env.GITHUB_REPOSITORY.split("/")[1];
+
               try {
                 const releases = await octokit.request("GET /repos/{owner}/{repo}/releases", {
                   owner,
@@ -47,64 +50,82 @@ jobs:
                 });
 
                 if (releases.data.length > 0) {
-                  const latestRelease = releases.data[0];
-                  const releaseTag = latestRelease.tag_name;
-                  const releaseDate = latestRelease.published_at;
-                  return { tag: releaseTag, date: releaseDate };
+                  return releases.data.map((release) => ({
+                    tag: release.tag_name,
+                    date: release.published_at,
+                    repo: release.html_url,
+                    hosting: getPackageHosting(release),
+                  }));
                 } else {
-                  return { tag: "No releases found", date: "N/A" };
+                  return [];
                 }
               } catch (error) {
-                console.error("Error fetching latest release for", repo, error);
-                return { tag: "Error", date: "N/A" };
+                console.error("Error fetching latest releases:", error);
+                return [];
               }
             };
 
-          const fetchLatestReleases = async () => {
-            const tableDataCommand = `markdown-table-cli --input <(echo "${tableData.map(row => row.join('|')).join('\n')}")`;
+            const getPackageHosting = (release) => {
+              const { html_url } = release;
+              const hosting = {
+                npm: "https://www.npmjs.com/package/",
+                packagist: "https://packagist.org/packages/",
+                pypi: "https://pypi.org/project/",
+                nuget: "https://www.nuget.org/packages/",
+              };
 
-            const md = execSync(tableDataCommand, { encoding: 'utf8' });
+              for (const [key, value] of Object.entries(hosting)) {
+                if (html_url.includes(value)) {
+                  return { platform: key, url: html_url.replace(value, "") };
+                }
+              }
 
-            const readmePath = path.join(process.cwd(), '.github', 'profile', 'README.md');
-            await fs.readFile(readmePath, 'utf8')
-              .then((data) => {
-                const updatedReadme = data.replace(/<!-- START_SDK_RELEASES -->[\s\S]*<!-- END_SDK_RELEASES -->/, `<!-- START_SDK_RELEASES -->\n${md}\n<!-- END_SDK_RELEASES -->`);
-                return fs.writeFile(readmePath, updatedReadme, 'utf8');
-              })
-              .catch((error) => {
-                console.error('Error updating README.md', error);
-                process.exit(1);
-              });
-          };
-
-          fetchLatestReleases()
-            .then(() => {
-              console.log('README.md updated successfully.');
-            })
-            .catch((error) => {
-              console.error('Error:', error);
-              process.exit(1);
-            });
-
-
-              const readmePath = path.join(process.cwd(), ".github", "profile", "README.md");
-              await fs.readFile(readmePath, "utf8")
-                .then((data) => {
-                  const updatedReadme = data.replace(/<!-- START_SDK_RELEASES -->[\s\S]*<!-- END_SDK_RELEASES -->/, `<!-- START_SDK_RELEASES -->\n${md}\n<!-- END_SDK_RELEASES -->`);
-                  return fs.writeFile(readmePath, updatedReadme, "utf8");
-                })
-                .catch((error) => {
-                  console.error("Error updating README.md", error);
-                  process.exit(1);
-                });
+              return { platform: "Unknown", url: html_url };
             };
 
-            fetchLatestReleases()
+            const generateTable = (releases) => {
+              const tableHeaders = [
+                "SDK",
+                "Platform / Ecosystem",
+                "GitHub Repository",
+                "Package Hosting",
+                "Latest Release Tag",
+                "Latest Release Date",
+              ];
+              const tableData = releases.map((release) => [
+                release.repo.split("/").pop(),
+                release.platform,
+                `[${release.repo}](${release.repo})`,
+                `[${release.hosting.platform}](${release.hosting.url})`,
+                release.tag,
+                release.date.slice(0, 10),
+              ]);
+
+              const table = [tableHeaders, ...tableData];
+
+              return table.map((row) => `| ${row.join(" | ")} |`).join("\\n");
+            };
+
+            const updateReadme = async () => {
+              const releases = await getLatestReleases();
+              const table = generateTable(releases);
+
+              const readmePath = path.join(process.cwd(), ".github", "profile", "README.md");
+              const readmeContent = await fs.readFile(readmePath, "utf8");
+              const updatedReadme = readmeContent.replace(
+                /<!-- START_SDK_RELEASES -->[\s\S]*<!-- END_SDK_RELEASES -->/,
+                `<!-- START_SDK_RELEASES -->\\n${table}\\n<!-- END_SDK_RELEASES -->`
+              );
+
+              await fs.writeFile(readmePath, updatedReadme, "utf8");
+            };
+
+            updateReadme()
               .then(() => {
                 console.log("README.md updated successfully.");
               })
               .catch((error) => {
-                console.error("Error:", error);
+                console.error("Error updating README.md:", error);
                 process.exit(1);
               });
           '
