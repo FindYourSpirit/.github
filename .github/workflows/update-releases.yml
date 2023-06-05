@@ -40,13 +40,13 @@ jobs:
 
             const getLatestReleases = async () => {
               try {
-                const owner = process.env.GITHUB_ACTOR;
+                const owner = "FindYourSpirit";
                 const repo = process.env.GITHUB_REPOSITORY.split("/")[1];
                 const releases = await octokit.request("GET /repos/{owner}/{repo}/releases", {
                   owner,
                   repo,
                 });
-
+                
                 if (releases.data.length > 0) {
                   return releases.data.map((release) => ({
                     repo,
