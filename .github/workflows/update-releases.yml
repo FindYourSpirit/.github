@@ -21,6 +21,8 @@ jobs:
         uses: actions/github-script@v4
         with:
           script: |
+            const { github } = require('@actions/github');
+
             const releases = await github.repos.listReleases({
               owner: 'FindYourSpirit',
               repo: 'fys-sdk-nodejs'
@@ -41,19 +43,25 @@ jobs:
         uses: actions/github-script@v4
         with:
           script: |
+            const { github } = require('@actions/github');
+
             const releases = await github.repos.listReleases({
               owner: 'FindYourSpirit',
               repo: 'fys-sdk-php'
             });
 
-            const latestRelease = releases.data[0]; // Assuming the latest release is at index 0
+              const latestRelease = releases.data[0]; // Assuming the latest release is at index 0
 
-            if (latestRelease) {
-              const releaseTag = latestRelease.tag_name;
-              const releaseDate = latestRelease.published_at;
-              return { tag: releaseTag, date: releaseDate };
-            } else {
-              return { tag: 'No releases found', date: 'N/A' };
+              if (latestRelease) {
+                const releaseTag = latestRelease.tag_name;
+                const releaseDate = latestRelease.published_at;
+                return { tag: releaseTag, date: releaseDate };
+              } else {
+                return { tag: 'No releases found', date: 'N/A' };
+              }
+            } catch (error) {
+              console.error('Error fetching latest release for fys-sdk-php:', error);
+              return { tag: 'Error', date: 'N/A' };
             }
 
       - name: Fetch latest release for fys-sdk-py
@@ -61,19 +69,25 @@ jobs:
         uses: actions/github-script@v4
         with:
           script: |
+            const { github } = require('@actions/github');
+
             const releases = await github.repos.listReleases({
               owner: 'FindYourSpirit',
               repo: 'fys-sdk-py'
             });
 
-            const latestRelease = releases.data[0]; // Assuming the latest release is at index 0
+              const latestRelease = releases.data[0]; // Assuming the latest release is at index 0
 
-            if (latestRelease) {
-              const releaseTag = latestRelease.tag_name;
-              const releaseDate = latestRelease.published_at;
-              return { tag: releaseTag, date: releaseDate };
-            } else {
-              return { tag: 'No releases found', date: 'N/A' };
+              if (latestRelease) {
+                const releaseTag = latestRelease.tag_name;
+                const releaseDate = latestRelease.published_at;
+                return { tag: releaseTag, date: releaseDate };
+              } else {
+                return { tag: 'No releases found', date: 'N/A' };
+              }
+            } catch (error) {
+              console.error('Error fetching latest release for fys-sdk-py:', error);
+              return { tag: 'Error', date: 'N/A' };
             }
 
       - name: Fetch latest release for fys-sdk
@@ -81,19 +95,25 @@ jobs:
         uses: actions/github-script@v4
         with:
           script: |
+            const { github } = require('@actions/github');
+
             const releases = await github.repos.listReleases({
               owner: 'FindYourSpirit',
               repo: 'fys-sdk'
             });
 
-            const latestRelease = releases.data[0]; // Assuming the latest release is at index 0
+              const latestRelease = releases.data[0]; // Assuming the latest release is at index 0
 
-            if (latestRelease) {
-              const releaseTag = latestRelease.tag_name;
-              const releaseDate = latestRelease.published_at;
-              return { tag: releaseTag, date: releaseDate };
-            } else {
-              return { tag: 'No releases found', date: 'N/A' };
+              if (latestRelease) {
+                const releaseTag = latestRelease.tag_name;
+                const releaseDate = latestRelease.published_at;
+                return { tag: releaseTag, date: releaseDate };
+              } else {
+                return { tag: 'No releases found', date: 'N/A' };
+              }
+            } catch (error) {
+              console.error('Error fetching latest release for fys-sdk:', error);
+              return { tag: 'Error', date: 'N/A' };
             }
 
       - name: Update README.md
