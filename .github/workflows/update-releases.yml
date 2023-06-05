@@ -38,36 +38,51 @@ jobs:
 
             const excludedRepos = [".github", "fys-forum"];
 
-            const getLatestReleases = async () => {
+            const fetchLatestReleases = async () => {
               try {
                 const owner = "FindYourSpirit";
-                const repo = process.env.GITHUB_REPOSITORY.split("/")[1];
                 console.log("Owner:", owner);
-                console.log("Repo:", repo);
 
-                const releases = await octokit.request("GET /repos/{owner}/{repo}/releases", {
+                const { data: repositories } = await octokit.request("GET /users/{owner}/repos", {
                   owner,
-                  repo,
                 });
-                console.log("Releases:", releases);
+                console.log("Repositories:", repositories);
 
-                if (releases.data.length > 0) {
-                  return releases.data.map((release) => ({
-                    repo,
-                    platform: "", // Update with the respective platform/ecosystem
-                    packageHosting: "", // Update with the respective package hosting
-                    tag: release.tag_name,
-                    releaseUrl: release.html_url,
-                  }));
-                } else {
-                  return [{ repo, tag: "No releases found", releaseUrl: "N/A" }];
+                const releases = [];
+
+                for (const repository of repositories) {
+                  const repo = repository.name;
+                  console.log("Repo:", repo);
+
+                  if (!excludedRepos.includes(repo)) {
+                    const { data: releaseData } = await octokit.request("GET /repos/{owner}/{repo}/releases", {
+                      owner,
+                      repo,
+                    });
+                    console.log("Release Data:", releaseData);
+
+                    if (releaseData.length > 0) {
+                      releases.push(
+                        ...releaseData.map((release) => ({
+                          repo,
+                          platform: "", // Update with the respective platform/ecosystem
+                          packageHosting: "", // Update with the respective package hosting
+                          tag: release.tag_name,
+                          releaseUrl: release.html_url,
+                        }))
+                      );
+                    } else {
+                      releases.push({ repo, tag: "No releases found", releaseUrl: "N/A" });
+                    }
+                  }
                 }
+
+                return releases;
               } catch (error) {
                 console.error("Error fetching latest releases:", error);
-                return [{ repo, tag: "Error", releaseUrl: "N/A" }];
+                return [{ repo: "Error", tag: "Error", releaseUrl: "N/A" }];
               }
             };
-
 
             const generateTable = (releases) => {
               const tableHeaders = ["SDK", "Platform / Ecosystem", "GitHub Repository", "Package Hosting", "Release"];
@@ -95,31 +110,9 @@ jobs:
               return tableContent;
             };
 
+            const releases = await fetchLatestReleases();
+            const tableContent = generateTable(releases);
 
-
-          const fetchLatestReleases = async () => {
-            const releases = await getLatestReleases();
-
-            const mdTable = generateTable(releases);
-
-            const readmePath = path.join(process.env.GITHUB_WORKSPACE, "profile", "README.md");
-            console.log("Readme Path:", readmePath);
-
-            const readmeContent = await fs.readFile(readmePath, "utf8");
-            console.log("Readme Contents:", readmeContent);
-
-            const updatedReadme = readmeContent.replace(/<!-- START_SDK_RELEASES -->[\s\S]*?<!-- END_SDK_RELEASES -->/, `<!-- START_SDK_RELEASES -->\n${mdTable}\n<!-- END_SDK_RELEASES -->`);
-            console.log("Updated Readme Contents:", updatedReadme);
-
-            await fs.writeFile(readmePath, updatedReadme, "utf8");
-            console.log("README.md updated successfully.");
-          };
-
-
-            fetchLatestReleases()
-              .catch((error) => {
-                console.error("Error:", error);
-                process.exit(1);
-              });
-
+            // Write the table content to README.md
+            fs.writeFileSync(path.join(__dirname, "README.md"), tableContent);
           '
