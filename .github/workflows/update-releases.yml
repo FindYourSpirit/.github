@@ -27,11 +27,10 @@ jobs:
       - name: Fetch latest releases
         id: fetch-releases
         run: |
-          npm install @octokit/core markdown-table fs-extra path
+          npm install @octokit/core fs-extra path
 
           node -e '
             const { Octokit } = require("@octokit/core");
-            const { execSync } = require("child_process");
             const fs = require("fs-extra");
             const path = require("path");
 
@@ -62,19 +61,33 @@ jobs:
               }
             };
 
+            const generateTable = (releases) => {
+              const tableHeaders = ["SDK", "Platform / Ecosystem", "GitHub Repository", "Package Hosting", "Release"];
+
+              const tableRows = releases
+                .filter((release) => !excludedRepos.includes(release.repo))
+                .map((release) => [
+                  release.repo,
+                  release.platform,
+                  `[${release.repo}](https://github.com/FindYourSpirit/${release.repo})`,
+                  release.packageHosting,
+                  `[${release.tag}](${release.releaseUrl})`,
+                ]);
+
+              const tableData = [tableHeaders, ...tableRows];
+
+              return tableData.map((row) => `| ${row.join(" | ")} |`).join("\\n");
+            };
+
             const fetchLatestReleases = async () => {
               const releases = await getLatestReleases();
 
-              const tableData = releases.map((release) => [release.tag, release.date]);
-
-              const tableDataCommand = `markdown-table-cli --input <(echo "${tableData.map(row => row.join("|")).join("\n")}")`;
-
-              const md = execSync(tableDataCommand, { encoding: "utf8" });
+              const mdTable = generateTable(releases);
 
               const readmePath = path.join(process.cwd(), ".github", "profile", "README.md");
               await fs.readFile(readmePath, "utf8")
                 .then((data) => {
-                  const updatedReadme = data.replace(/<!-- START_SDK_RELEASES -->[\s\S]*<!-- END_SDK_RELEASES -->/, `<!-- START_SDK_RELEASES -->\n${md}\n<!-- END_SDK_RELEASES -->`);
+                  const updatedReadme = data.replace(/<!-- START_SDK_RELEASES -->[\s\S]*<!-- END_SDK_RELEASES -->/, `<!-- START_SDK_RELEASES -->\\n${mdTable}\\n<!-- END_SDK_RELEASES -->`);
                   return fs.writeFile(readmePath, updatedReadme, "utf8");
                 })
                 .catch((error) => {
