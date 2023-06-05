@@ -23,188 +23,85 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-      - name: Fetch latest release for fys-sdk-nodejs
-        id: nodejs
-        uses: actions/github-script@v4
-        with:
-          script: |
-            const releases = await github.repos.listReleases({
-              owner: 'FindYourSpirit',
-              repo: 'fys-sdk-nodejs'
-            });
 
-            const latestRelease = releases.data[0]; // Assuming the latest release is at index 0
-
-            if (latestRelease) {
-              const releaseTag = latestRelease.tag_name;
-              const releaseDate = latestRelease.published_at;
-              return { tag: releaseTag, date: releaseDate };
-            } else {
-              return { tag: 'No releases found', date: 'N/A' };
-            }
-
-      - name: Fetch latest release for fys-sdk-php
-        id: php
-        uses: actions/github-script@v4
-        with:
-          script: |
-            try {
-              const releases = await github.repos.listReleases({
-                owner: 'FindYourSpirit',
-                repo: 'fys-sdk-php'
-              });
-
-              const latestRelease = releases.data[0]; // Assuming the latest release is at index 0
-
-              if (latestRelease) {
-                const releaseTag = latestRelease.tag_name;
-                const releaseDate = latestRelease.published_at;
-                return { tag: releaseTag, date: releaseDate };
-              } else {
-                return { tag: 'No releases found', date: 'N/A' };
-              }
-            } catch (error) {
-              console.error('Error fetching latest release for fys-sdk-php:', error);
-              return { tag: 'Error', date: 'N/A' };
-            }
-
-      - name: Fetch latest release for fys-sdk-py
-        id: py
-        uses: actions/github-script@v4
-        with:
-          script: |
-            try {
-              const releases = await github.repos.listReleases({
-                owner: 'FindYourSpirit',
-                repo: 'fys-sdk-py'
-              });
-
-              const latestRelease = releases.data[0]; // Assuming the latest release is at index 0
-
-              if (latestRelease) {
-                const releaseTag = latestRelease.tag_name;
-                const releaseDate = latestRelease.published_at;
-                return { tag: releaseTag, date: releaseDate };
-              } else {
-                return { tag: 'No releases found', date: 'N/A' };
-              }
-            } catch (error) {
-              console.error('Error fetching latest release for fys-sdk-py:', error);
-              return { tag: 'Error', date: 'N/A' };
-            }
-
-      - name: Fetch latest release for fys-sdk
-        id: dotnet
-        uses: actions/github-script@v4
-        with:
-          script: |
-            try {
-              const releases = await github.repos.listReleases({
-                owner: 'FindYourSpirit',
-                repo: 'fys-sdk'
-              });
-
-              const latestRelease = releases.data[0]; // Assuming the latest release is at index 0
-
-              if (latestRelease) {
-                const releaseTag = latestRelease.tag_name;
-                const releaseDate = latestRelease.published_at;
-                return { tag: releaseTag, date: releaseDate };
-              } else {
-                return { tag: 'No releases found', date: 'N/A' };
-              }
-            } catch (error) {
-              console.error('Error fetching latest release for fys-sdk:', error);
-              return { tag: 'Error', date: 'N/A' };
-            }
-
-      - name: Update README.md
+      - name: Fetch latest releases
+        id: fetch-releases
         run: |
-          npm install markdown-table fs-extra path
+          npm install @octokit/core markdown-table fs-extra path
 
-          node -e "
-          const releases = [];
+          const { Octokit } = require('@octokit/core');
+          const markdownTable = require('markdown-table');
+          const fs = require('fs-extra');
+          const path = require('path');
 
-          const getLatestRelease = async (repoName, repoUrl) => {
+          const octokit = new Octokit();
+
+          const excludedRepos = ['.github', 'fys-forum'];
+
+          const getLatestRelease = async (owner, repo) => {
             try {
-              const response = await github.repos.getLatestRelease({
-                owner: 'FindYourSpirit',
-                repo: repoName
+              const releases = await octokit.request('GET /repos/{owner}/{repo}/releases', {
+                owner,
+                repo,
               });
-              const releaseTag = response.data.tag_name;
-              const releaseDate = response.data.published_at;
 
-              releases.push({
-                repo: repoName,
-                tag: releaseTag,
-                date: releaseDate,
-                url: repoUrl
-              });
+              if (releases.data.length > 0) {
+                const latestRelease = releases.data[0];
+                const releaseTag = latestRelease.tag_name;
+                const releaseDate = latestRelease.published_at;
+                return { tag: releaseTag, date: releaseDate };
+              } else {
+                return { tag: 'No releases found', date: 'N/A' };
+              }
             } catch (error) {
-              console.error('Error fetching latest release for', repoName, error);
-              releases.push({
-                repo: repoName,
-                tag: 'No releases found',
-                date: 'N/A',
-                url: repoUrl
-              });
+              console.error('Error fetching latest release for', repo, error);
+              return { tag: 'Error', date: 'N/A' };
             }
           };
 
           const fetchLatestReleases = async () => {
-            await getLatestRelease('fys-sdk-nodejs', 'https://github.com/FindYourSpirit/fys-sdk-nodejs');
-            await getLatestRelease('fys-sdk-php', 'https://github.com/FindYourSpirit/fys-sdk-php');
-            await getLatestRelease('fys-sdk-py', 'https://github.com/FindYourSpirit/fys-sdk-py');
-            await getLatestRelease('fys-sdk', 'https://github.com/FindYourSpirit/fys-sdk');
+            const org = 'FindYourSpirit';
+            const repositories = await octokit.request('GET /orgs/{org}/repos', { org });
+
+            const tableData = [
+              ['SDK', 'Platform / Ecosystem', 'GitHub Repository', 'Package Hosting', 'Latest Release'],
+            ];
+
+            for (const repository of repositories.data) {
+              if (!excludedRepos.includes(repository.name)) {
+                const latestRelease = await getLatestRelease(org, repository.name);
+                const row = [
+                  repository.name,
+                  repository.language || 'N/A',
+                  repository.html_url,
+                  `https://www.npmjs.com/package/${repository.name}`,
+                  latestRelease.tag !== 'No releases found' ? `[${latestRelease.tag}](${repository.html_url})` : 'No releases found',
+                ];
+                tableData.push(row);
+              }
+            }
+
+            const md = markdownTable(tableData, {
+              align: ['l', 'l', 'l', 'l', 'l'],
+            });
+
+            const readmePath = path.join(process.cwd(), '.github', 'profile', 'README.md');
+            await fs.readFile(readmePath, 'utf8')
+              .then((data) => {
+                const updatedReadme = data.replace(/<!-- START_SDK_RELEASES -->[\s\S]*<!-- END_SDK_RELEASES -->/, `<!-- START_SDK_RELEASES -->\n${md}\n<!-- END_SDK_RELEASES -->`);
+                return fs.writeFile(readmePath, updatedReadme, 'utf8');
+              })
+              .catch((error) => {
+                console.error('Error updating README.md', error);
+                process.exit(1);
+              });
           };
 
           fetchLatestReleases()
             .then(() => {
-              const markdownTable = require('markdown-table').default;
-              const fs = require('fs-extra');
-              const path = require('path');
-
-              const tableData = [
-                ['SDK', 'Platform / Ecosystem', 'GitHub Repository', 'Package Hosting', 'Latest Release']
-              ];
-
-              const createRow = (repoName, platform, repoUrl, packageHosting, latestRelease) => {
-                const row = [repoName, platform, repoUrl, packageHosting, latestRelease];
-                tableData.push(row);
-              };
-
-              const addTableRow = (repo, platform, repoUrl, packageHosting) => {
-                const release = releases.find((r) => r.repo === repo);
-
-                if (release) {
-                  createRow(repo, platform, repoUrl, packageHosting, \`[\${release.tag}](\${release.url})\`);
-                } else {
-                  createRow(repo, platform, repoUrl, packageHosting, 'No releases found');
-                }
-              };
-
-              addTableRow('fys-sdk-nodejs', 'Node.js', 'https://github.com/FindYourSpirit/fys-sdk-nodejs', 'https://www.npmjs.com/package/fys-sdk-nodejs');
-              addTableRow('fys-sdk-php', 'PHP', 'https://github.com/FindYourSpirit/fys-sdk-php', 'https://packagist.org/packages/findyourspirit/fys-sdk-php');
-              addTableRow('fys-sdk-py', 'Python', 'https://github.com/FindYourSpirit/fys-sdk-py', 'https://pypi.org/project/fys-sdk-py');
-              addTableRow('fys-sdk', '.NET', 'https://github.com/FindYourSpirit/fys-sdk', 'https://www.nuget.org/packages/fys-sdk');
-
-              const md = markdownTable(tableData, {
-                align: ['l', 'l', 'l', 'l', 'l']
-              });
-
-              const readmePath = path.join(process.cwd(), 'README.md');
-              fs.readFile(readmePath, 'utf8')
-                .then((data) => {
-                  const updatedReadme = data.replace(/<!-- START_SDK_RELEASES -->[\s\S]*<!-- END_SDK_RELEASES -->/, \`<!-- START_SDK_RELEASES -->\\n\${md}\\n<!-- END_SDK_RELEASES -->\`);
-                  return fs.writeFile(readmePath, updatedReadme, 'utf8');
-                })
-                .catch((error) => {
-                  console.error('Error updating README.md', error);
-                  process.exit(1);
-                });
+              console.log('README.md updated successfully.');
             })
             .catch((error) => {
-              console.error('Error fetching latest releases', error);
+              console.error('Error:', error);
               process.exit(1);
             });
-          "
