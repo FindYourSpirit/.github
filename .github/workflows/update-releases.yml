@@ -31,7 +31,7 @@ jobs:
 
           node -e '
             const { Octokit } = require("@octokit/core");
-            const markdownTable = require("markdown-table");
+            const { execSync } = require('child_process');
             const fs = require("fs-extra");
             const path = require("path");
 
@@ -60,31 +60,32 @@ jobs:
               }
             };
 
-            const fetchLatestReleases = async () => {
-              const org = "FindYourSpirit";
-              const repositories = await octokit.request("GET /orgs/{org}/repos", { org });
+          const fetchLatestReleases = async () => {
+            const tableDataCommand = `markdown-table-cli --input <(echo "${tableData.map(row => row.join('|')).join('\n')}")`;
 
-              const tableData = [
-                ["SDK", "Platform / Ecosystem", "GitHub Repository", "Package Hosting", "Latest Release"],
-              ];
+            const md = execSync(tableDataCommand, { encoding: 'utf8' });
 
-              for (const repository of repositories.data) {
-                if (!excludedRepos.includes(repository.name)) {
-                  const latestRelease = await getLatestRelease(org, repository.name);
-                  const row = [
-                    repository.name,
-                    repository.language || "N/A",
-                    repository.html_url,
-                    `https://www.npmjs.com/package/${repository.name}`,
-                    latestRelease.tag !== "No releases found" ? `[${latestRelease.tag}](${repository.html_url})` : "No releases found",
-                  ];
-                  tableData.push(row);
-                }
-              }
-
-              const md = markdownTable(tableData, {
-                align: ["l", "l", "l", "l", "l"],
+            const readmePath = path.join(process.cwd(), '.github', 'profile', 'README.md');
+            await fs.readFile(readmePath, 'utf8')
+              .then((data) => {
+                const updatedReadme = data.replace(/<!-- START_SDK_RELEASES -->[\s\S]*<!-- END_SDK_RELEASES -->/, `<!-- START_SDK_RELEASES -->\n${md}\n<!-- END_SDK_RELEASES -->`);
+                return fs.writeFile(readmePath, updatedReadme, 'utf8');
+              })
+              .catch((error) => {
+                console.error('Error updating README.md', error);
+                process.exit(1);
               });
+          };
+
+          fetchLatestReleases()
+            .then(() => {
+              console.log('README.md updated successfully.');
+            })
+            .catch((error) => {
+              console.error('Error:', error);
+              process.exit(1);
+            });
+
 
               const readmePath = path.join(process.cwd(), ".github", "profile", "README.md");
               await fs.readFile(readmePath, "utf8")
