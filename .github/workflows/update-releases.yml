@@ -21,8 +21,6 @@ jobs:
         uses: actions/github-script@v4
         with:
           script: |
-            const { github } = require('@actions/github');
-
             const releases = await github.repos.listReleases({
               owner: 'FindYourSpirit',
               repo: 'fys-sdk-nodejs'
@@ -43,8 +41,6 @@ jobs:
         uses: actions/github-script@v4
         with:
           script: |
-            const { github } = require('@actions/github');
-
             const releases = await github.repos.listReleases({
               owner: 'FindYourSpirit',
               repo: 'fys-sdk-php'
@@ -69,8 +65,6 @@ jobs:
         uses: actions/github-script@v4
         with:
           script: |
-            const { github } = require('@actions/github');
-
             const releases = await github.repos.listReleases({
               owner: 'FindYourSpirit',
               repo: 'fys-sdk-py'
@@ -95,8 +89,6 @@ jobs:
         uses: actions/github-script@v4
         with:
           script: |
-            const { github } = require('@actions/github');
-
             const releases = await github.repos.listReleases({
               owner: 'FindYourSpirit',
               repo: 'fys-sdk'
