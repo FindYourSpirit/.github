@@ -99,7 +99,7 @@ jobs:
             const readmeContent = await fs.readFile(readmePath, "utf8");
             console.log("Readme Contents:", readmeContent);
 
-            const updatedReadme = readmeContent.replace(/<!-- START_SDK_RELEASES -->[\s\S]*?<!-- END_SDK_RELEASES -->/, `<!-- START_SDK_RELEASES -->\n${mdTable}\n<!-- END_SDK_RELEASES -->`);
+            const updatedReadme = readmeContent.replace(/<!-- START_SDK_RELEASES -->[^]*<!-- END_SDK_RELEASES -->/, `<!-- START_SDK_RELEASES -->\n${mdTable}\n<!-- END_SDK_RELEASES -->`);
             console.log("Updated Readme Contents:", updatedReadme);
 
             await fs.writeFile(readmePath, updatedReadme, "utf8");
