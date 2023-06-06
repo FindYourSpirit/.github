@@ -135,6 +135,3 @@ jobs:
           git commit -m "Update README.md" || true
           git push origin update-readme
           gh pr create --base main --head update-readme --title "Update README"
-
-
-
