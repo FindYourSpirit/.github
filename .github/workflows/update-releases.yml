@@ -118,9 +118,7 @@ jobs:
               fs.writeFileSync(path.join(process.env.GITHUB_WORKSPACE, "README.md"), tableContent);
             })();
           '
-      - name: Verify PAT token
-        run: echo ${{ secrets.PAT_TOKEN_CLASSIC }}
-        
+          
       - name: Update README
         env:
           PAT_TOKEN: ${{ secrets.PAT_TOKEN_CLASSIC }}
@@ -133,7 +131,10 @@ jobs:
           git pull origin main
           git add README.md
           git commit -m "Update README.md" || true
-          git remote set-url origin git@github.com:FindYourSpirit/.github.git
+          git remote set-url origin https://github.com/FindYourSpirit/.github.git
           git push origin HEAD:main
           gh pr create --base main --head update-readme --title "Update README"
+
+
+
 
