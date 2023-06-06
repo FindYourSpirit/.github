@@ -1,3 +1,3 @@
 # .github
 
-Default Community Health Files for the Rante organization on GitHub
+Default Community Health Files for the Find Your Spirit (FYS) organization on GitHub
