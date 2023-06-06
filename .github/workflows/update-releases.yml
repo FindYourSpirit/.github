@@ -118,8 +118,6 @@ jobs:
               fs.writeFileSync(path.join(process.env.GITHUB_WORKSPACE, "README.md"), tableContent);
             })();
           '
-      - name: Verify PAT token
-        run: echo ${{ secrets.PAT_TOKEN_CLASSIC }}
 
       - name: Update README
         env:
