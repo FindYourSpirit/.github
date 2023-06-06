@@ -122,9 +122,14 @@ jobs:
       - name: Update README
         env:
           PAT_TOKEN: ${{ secrets.PAT_TOKEN_CLASSIC }}
+          GITHUB_USERNAME: realTimothyJLos
+          GITHUB_EMAIL: loshousehold@gmail.com
         run: |
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
+          git config --global user.email "${GITHUB_EMAIL}"
+          git config --global user.name "${GITHUB_USERNAME}"
           git add README.md
           git commit -m "Update README.md" || true
-          git push https://github.com/FindYourSpirit/.github HEAD:main
+          git remote add origin https://github.com/FindYourSpirit/.github.git
+          git push origin HEAD:main
+
+
