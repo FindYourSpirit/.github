@@ -121,7 +121,7 @@ jobs:
 
       - name: Update README
         env:
-          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN_CLASSIC }}
           GITHUB_USERNAME: realTimothyJLos
           GITHUB_EMAIL: loshousehold@gmail.com
         run: |
@@ -131,5 +131,5 @@ jobs:
           git pull origin main
           git add README.md
           git commit -m "Update README.md" || true
-          git push "https://github.com/FindYourSpirit/.github.git" HEAD:main
+          git push "https://${GITHUB_USERNAME}:${PAT_TOKEN}@github.com/realTimothyJLos/.github.git" HEAD:main
 
