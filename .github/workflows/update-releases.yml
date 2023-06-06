@@ -131,8 +131,4 @@ jobs:
           git pull origin main
           git add README.md
           git commit -m "Update README.md" || true
-          git push "https://${GITHUB_USERNAME}:${PAT_TOKEN}@github.com/FindYourSpirit/.github.git" HEAD:main
-
-
-
-
+          git push "https://github.com/${GITHUB_USERNAME}/${{ github.repository }}.git" HEAD:main
