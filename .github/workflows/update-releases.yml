@@ -127,4 +127,4 @@ jobs:
           git config --global user.name "GitHub Actions"
           git add README.md
           git commit -m "Update README.md" || true
-          git push https://github.com/FindYourSpirit/.github.git HEAD:main
+          git push https://github.com/FindYourSpirit/.github HEAD:main
