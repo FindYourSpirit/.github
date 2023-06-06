@@ -121,7 +121,7 @@ jobs:
 
       - name: Update README
         env:
-          PAT_TOKEN: ${{ secrets.PAT_TOKEN_CLASSIC }}
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
           GITHUB_USERNAME: realTimothyJLos
           GITHUB_EMAIL: loshousehold@gmail.com
         run: |
