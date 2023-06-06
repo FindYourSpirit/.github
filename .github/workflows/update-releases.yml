@@ -127,9 +127,11 @@ jobs:
         run: |
           git config --global user.email "${GITHUB_EMAIL}"
           git config --global user.name "${GITHUB_USERNAME}"
+          git checkout main
+          git pull origin main
           git add README.md
           git commit -m "Update README.md" || true
-          git remote add origin https://github.com/FindYourSpirit/.github.git
-          git push origin HEAD:main
+          git push origin main
+
 
 
