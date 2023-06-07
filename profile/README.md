@@ -3,17 +3,6 @@
 At our organization, we foster open communities that collaborate on incredible projects for the hotel industry and its guests. We believe in the power of teamwork and are always excited to welcome new contributors.
 
 If you're looking to dive into open source development, we have plenty of "good first issue" opportunities available. It's a fantastic way to get involved and make a meaningful impact.
-
-
-
-| SDK            | Platform / Ecosystem | GitHub Repository                                 | Package Hosting                        |
-|----------------|----------------------|---------------------------------------------------|----------------------------------------|
-| fys-sdk-nodejs | Node.js              | [fys-sdk-nodejs](https://github.com/FindYourSpirit/fys-sdk-nodejs) | [npm](https://www.npmjs.com/package/fys-sdk-nodejs)     |
-| fys-sdk-php    | PHP                  | [fys-sdk-php](https://github.com/FindYourSpirit/fys-sdk-php)       | [Packagist](https://packagist.org/packages/findyourspirit/fys-sdk-php) |
-| fys-sdk-py     | Python               | [fys-sdk-py](https://github.com/FindYourSpirit/fys-sdk-py)         | [PyPI](https://pypi.org/project/fys-sdk-py) |
-| fys-sdk        | .NET                 | [fys-sdk](https://github.com/FindYourSpirit/fys-sdk)               | [NuGet](https://www.nuget.org/packages/fys-sdk)       |
-
-
 Whether you prefer working with JavaScript, PHP, Python, or .NET, we've got you covered. Our SDKs provide intuitive APIs and helpful documentation, making it seamless for both hotels and individuals, along with guests, working in the hospitality sector to leverage our services and enhance customer engagement.
 
 Join us on this journey as we revolutionize the hotel industry through collaborative efforts and innovative solutions. Explore our repositories, contribute to our projects, and let's build something amazing together!
@@ -25,6 +14,13 @@ Our offerings include SDKs for multiple platforms and ecosystems, allowing devel
 
 <!-- START_SDK_RELEASES -->
 <!-- END_SDK_RELEASES -->
+
+| SDK            | Platform / Ecosystem | GitHub Repository                                 | Package Hosting                        |
+|----------------|----------------------|---------------------------------------------------|----------------------------------------|
+| fys-sdk-nodejs | Node.js              | [fys-sdk-nodejs](https://github.com/FindYourSpirit/fys-sdk-nodejs) | [npm](https://www.npmjs.com/package/fys-sdk-nodejs)     |
+| fys-sdk-php    | PHP                  | [fys-sdk-php](https://github.com/FindYourSpirit/fys-sdk-php)       | [Packagist](https://packagist.org/packages/findyourspirit/fys-sdk-php) |
+| fys-sdk-py     | Python               | [fys-sdk-py](https://github.com/FindYourSpirit/fys-sdk-py)         | [PyPI](https://pypi.org/project/fys-sdk-py) |
+| fys-sdk        | .NET                 | [fys-sdk](https://github.com/FindYourSpirit/fys-sdk)               | [NuGet](https://www.nuget.org/packages/fys-sdk)       |
 
 
 ## Accessing Our Services: Free Trial and Access Plans
