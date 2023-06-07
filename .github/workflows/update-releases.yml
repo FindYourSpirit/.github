@@ -139,7 +139,8 @@ jobs:
           git commit -m "Update README.md" || true
           git remote set-url origin https://github.com/FindYourSpirit/.github.git
           git push origin HEAD:main
-          gh pr create --base main --head update-readme --title "Update README"
+          gh pr create --base main --head update-readme --title "Update README" --body "This is the pull request body"
+
 
 
 
