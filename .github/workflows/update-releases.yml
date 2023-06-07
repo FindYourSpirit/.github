@@ -138,9 +138,9 @@ jobs:
             # If it doesn't exist, create the branch from main
             git checkout -b update-readme
           else
-            # If it exists, switch to the branch
+            # If it exists, switch to the branch and pull changes with the merge strategy
             git checkout update-readme
-            git pull origin update-readme
+            git pull --strategy=recursive -Xtheirs origin update-readme
           fi
 
           # Modify the README.md file here
@@ -148,9 +148,6 @@ jobs:
 
           git add README.md
           git commit -m "Update README.md"
-
-          # Pull latest changes from the remote branch
-          git pull origin update-readme
 
           # Push the changes to the remote branch
           git push origin HEAD:update-readme
