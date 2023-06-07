@@ -119,6 +119,11 @@ jobs:
             })();
           '
           
+      - name: Checkout repo with custom token
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PAT_TOKEN_CLASSIC }} 
+          
       - name: Update README
         env:
           PAT_TOKEN: ${{ secrets.PAT_TOKEN_CLASSIC }}
