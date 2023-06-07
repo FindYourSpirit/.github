@@ -122,11 +122,11 @@ jobs:
       - name: Checkout repo with custom token
         uses: actions/checkout@v3
         with:
-          token: ${{ secrets.PAT_TOKEN_CLASSIC }} 
+          token: ${{ secrets.PAT_TOKEN }} 
           
       - name: Update README
         env:
-          PAT_TOKEN: ${{ secrets.PAT_TOKEN_CLASSIC }}
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
           GITHUB_USERNAME: realTimothyJLos
           GITHUB_EMAIL: loshousehold@gmail.com
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
