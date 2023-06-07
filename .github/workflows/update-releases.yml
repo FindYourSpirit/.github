@@ -138,10 +138,10 @@ jobs:
             # If it doesn't exist, create the branch from main
             git checkout -b update-readme
           else
-            # If it exists, switch to the branch, fetch remote changes, and rebase
+            # If it exists, switch to the branch, fetch remote changes, and fast-forward
             git checkout update-readme
             git fetch origin update-readme
-            git rebase origin/update-readme
+            git merge --ff-only origin/update-readme
           fi
 
           # Modify the README.md file here
@@ -154,4 +154,3 @@ jobs:
           git push origin HEAD:update-readme
 
           gh pr create --base main --head update-readme --title "Update README" --body "This is the pull request body"
-
