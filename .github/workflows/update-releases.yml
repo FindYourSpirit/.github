@@ -128,7 +128,6 @@ jobs:
         env:
           GITHUB_USERNAME: realTimothyJLos
           GITHUB_EMAIL: loshousehold@gmail.com
-          GH_TOKEN: ${{ secrets.PAT_TOKEN_CLASSIC }}
         run: |
           git config --global user.email "${GITHUB_EMAIL}"
           git config --global user.name "${GITHUB_USERNAME}"
@@ -140,4 +139,4 @@ jobs:
           git push origin HEAD:main
           env:
             GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          gh pr create --base main --head update-readme --title "Update README" --body "This is the pull request body"
+            gh pr create --base main --head update-readme --title "Update README" --body "This is the pull request body"
