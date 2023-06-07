@@ -134,8 +134,13 @@ jobs:
           git config --global user.name "${GITHUB_USERNAME}"
           git checkout -b update-readme
           git pull origin main
+
+          # Modify the README.md file here
+          echo "This is an updated README" >> README.md
+
           git add README.md
-          git commit -m "Update README.md" || true
+          git commit -m "Update README.md"
           git remote set-url origin https://github.com/FindYourSpirit/.github.git
           git push origin HEAD:main
+
           gh pr create --base main --head update-readme --title "Update README" --body "This is the pull request body"
