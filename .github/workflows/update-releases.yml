@@ -118,11 +118,6 @@ jobs:
               fs.writeFileSync(path.join(process.env.GITHUB_WORKSPACE, "README.md"), tableContent);
             })();
           '
-          
-      - name: Checkout repo with custom token
-        uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.PAT_TOKEN_CLASSIC }}
 
       - name: Checkout repo with custom token
         uses: actions/checkout@v3
@@ -143,9 +138,10 @@ jobs:
             # If it doesn't exist, create the branch from main
             git checkout -b update-readme
           else
-            # If it exists, switch to the branch and pull changes from the remote branch
+            # If it exists, switch to the branch, fetch remote changes, and rebase
             git checkout update-readme
-            git pull origin update-readme
+            git fetch origin update-readme
+            git rebase origin/update-readme
           fi
 
           # Modify the README.md file here
