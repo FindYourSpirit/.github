@@ -129,6 +129,7 @@ jobs:
           PAT_TOKEN: ${{ secrets.PAT_TOKEN_CLASSIC }}
           GITHUB_USERNAME: realTimothyJLos
           GITHUB_EMAIL: loshousehold@gmail.com
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config --global user.email "${GITHUB_EMAIL}"
           git config --global user.name "${GITHUB_USERNAME}"
@@ -139,6 +140,7 @@ jobs:
           git remote set-url origin https://github.com/FindYourSpirit/.github.git
           git push origin HEAD:main
           gh pr create --base main --head update-readme --title "Update README"
+
 
 
 
