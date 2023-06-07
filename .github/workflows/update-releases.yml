@@ -122,13 +122,12 @@ jobs:
       - name: Checkout repo with custom token
         uses: actions/checkout@v3
         with:
-          token: ${{ secrets.PAT_TOKEN_CLASSIC }} 
+          token: ${{ secrets.PAT_TOKEN_CLASSIC }}
 
       - name: Update README
         env:
           GITHUB_USERNAME: realTimothyJLos
           GITHUB_EMAIL: loshousehold@gmail.com
-          GH_TOKEN: ${{ secrets.PAT_TOKEN_CLASSIC }}
         run: |
           git config --global user.email "${GITHUB_EMAIL}"
           git config --global user.name "${GITHUB_USERNAME}"
@@ -139,4 +138,4 @@ jobs:
           git remote set-url origin https://github.com/FindYourSpirit/.github.git
           git push origin HEAD:main
           gh pr create --base main --head update-readme --title "Update README" --body "This is the pull request body"
-          "This is the pull request body"
+
