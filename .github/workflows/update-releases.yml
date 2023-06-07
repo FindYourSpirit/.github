@@ -126,10 +126,9 @@ jobs:
 
       - name: Update README
         env:
-          PAT_TOKEN: ${{ secrets.PAT_TOKEN_CLASSIC }}
           GITHUB_USERNAME: realTimothyJLos
           GITHUB_EMAIL: loshousehold@gmail.com
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.PAT_TOKEN_CLASSIC }}
         run: |
           git config --global user.email "${GITHUB_EMAIL}"
           git config --global user.name "${GITHUB_USERNAME}"
